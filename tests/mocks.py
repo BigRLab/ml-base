@@ -2,7 +2,8 @@ from pydantic import BaseModel, Field
 from pydantic import ValidationError
 from enum import Enum
 
-from ml_base.ml_model import MLModel, MLModelSchemaValidationException
+from ml_base.ml_model import MLModel, MLModelException, MLModelSchemaValidationException
+from ml_base.decorator import MLModelDecorator
 
 
 class ModelInput(BaseModel):
@@ -46,3 +47,40 @@ class MLModelMock(MLModel):
 # creating a mockup class to test with
 class SomeClass(object):
     pass
+
+
+class SimpleDecorator(MLModelDecorator):
+    """Decorator that does nothing."""
+    pass
+
+
+class AddStringDecorator(MLModelDecorator):
+    """Decorator that adds a string to the display_name, qualified_name, description, and version string returned
+    by the model object."""
+
+    @property
+    def display_name(self) -> str:
+        return self._model.display_name + self._configuration["string"]
+
+    @property
+    def qualified_name(self) -> str:
+        return self._model.qualified_name + self._configuration["string"]
+
+    @property
+    def description(self) -> str:
+        return self._model.description + self._configuration["string"]
+
+    @property
+    def version(self) -> str:
+        return self._model.version + self._configuration["string"]
+
+
+class CatchExceptionsDecorator(MLModelDecorator):
+    """Decorator that catches exceptions thrown by the predict method of the model and raises an MLModelException
+    instead."""
+
+    def predict(self, data):
+        try:
+            return self._model.predict(data=data)
+        except Exception as e:
+            raise MLModelException(e)
