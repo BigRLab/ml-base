@@ -20,11 +20,36 @@ class MLModelDecorator(MLModel):
             and stores them in a dictionary called "_configuration". This configuration dictionary can be used to modify
             the behavior of the decorator object at runtime.
 
+        .. note::
+            The decorator only supports decorating the display_name, qualified_name, description, version, input_schema,
+            output_schema, and predict methods of an MLModel object. All other methods are passed through to the
+            decorated object.
+
         """
         if not isinstance(model, MLModel):
             raise ValueError("Only objects of type MLModel can be wrapped with MLModelDecorator instances.")
         self._model = model
         self._configuration = kwargs
+
+    def __repr__(self):
+        """Return a string describing the decorator and the model that it is decorating."""
+        return "{}({})".format(str(self.__class__.__name__), str(self._model))
+
+    # these methods allow all other methods on MLModel to be directly accessed
+    def __getattr__(self, name):
+        """Retrieve an attribute."""
+        return getattr(self.__dict__['_model'], name)
+
+    def __setattr__(self, name, value):
+        """Set an attribute."""
+        if name in ('_model', '_configuration'):
+            self.__dict__[name] = value
+        else:
+            setattr(self.__dict__['_model'], name, value)
+
+    def __delattr__(self, name):
+        """Delete an attribute."""
+        delattr(self.__dict__['_model'], name)
 
     @property
     def display_name(self) -> str:

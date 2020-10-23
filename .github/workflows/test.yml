@@ -25,6 +25,7 @@ jobs:
         python -m pip install --upgrade setuptools
         python -m pip install --upgrade wheel
         make dependencies
+
     - name: Install Test Dependencies
       run : make test-dependencies
 

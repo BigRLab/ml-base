@@ -5,6 +5,10 @@ from abc import ABC, abstractmethod
 class MLModel(ABC):
     """Base class for ML model prediction code."""
 
+    def __repr__(self):
+        """Return a string representing the model object."""
+        return self.__class__.__name__
+
     @property
     @abstractmethod
     def display_name(self) -> str:
@@ -64,6 +68,7 @@ class MLModel(ABC):
     @abstractmethod
     def __init__(self):
         """Create an MLModel instance by adding any deserialization and initialization code for the model."""
+        # TODO: save configuration
         raise NotImplementedError()
 
     @abstractmethod

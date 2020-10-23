@@ -2,7 +2,7 @@ import unittest
 from traceback import print_tb
 
 from ml_base.utilities.model_manager import ModelManager
-from tests.mocks import MLModelMock
+from tests.mocks import MLModelMock, SomeClass
 
 
 class ModelManagerTests(unittest.TestCase):
@@ -73,12 +73,13 @@ class ModelManagerTests(unittest.TestCase):
         """Testing that the ModelManager only allows MLModel objects to be stored."""
         # arrange
         model_manager = ModelManager()
+        some_object = SomeClass()
 
         # act
         exception_raised = False
         exception_message = ""
         try:
-            model_manager.load_model("tests.mocks.SomeClass")
+            model_manager.add_model(some_object)
         except Exception as e:
             exception_raised = True
             exception_message = str(e)
@@ -91,16 +92,18 @@ class ModelManagerTests(unittest.TestCase):
         """Testing that the ModelManager does not allow duplicate qualified names in the singleton."""
         # arrange
         model_manager = ModelManager()
+        model1 = MLModelMock()
+        model2 = MLModelMock()
 
         # act
         # loading the first instance of the model object
-        model_manager.load_model("tests.mocks.MLModelMock")
+        model_manager.add_model(model1)
 
         exception_raised = False
         exception_message = ""
         try:
             # loading it again
-            model_manager.load_model("tests.mocks.MLModelMock")
+            model_manager.add_model(model2)
         except Exception as e:
             exception_raised = True
             exception_message = str(e)

@@ -7,6 +7,46 @@ from tests.mocks import SomeClass, MLModelMock, SimpleDecorator, ModelInput, Mod
 
 class DecoratorTests(unittest.TestCase):
 
+    def test_str_method(self):
+        """Test that the __str__ method of a decorator works."""
+        # arrange
+        model = MLModelMock()
+        decorator1 = SimpleDecorator(model=model)
+        decorator2 = AddStringDecorator(model=decorator1, string=" test")
+
+        # act
+        string = str(decorator2)
+
+        # assert
+        self.assertTrue(string == "AddStringDecorator(SimpleDecorator(MLModelMock))")
+
+    def test_dynamic_attribute_access(self):
+        """Test that all attributes of MLModel object can be accessed through decorators."""
+        # arrange
+        model = MLModelMock()
+        decorator = SimpleDecorator(model=model)
+
+        # act, assert
+        decorator.new_attribute = "asd"
+        self.assertTrue(model.new_attribute == "asd")
+
+        # act, assert
+        del(decorator.new_attribute)
+        self.assertTrue("new_attribute" not in model.__dict__)
+
+        # now doing the same thing with more than one decorator
+        another_decorator = AddStringDecorator(model=decorator, string=" test")
+
+        # act, assert
+        another_decorator.new_attribute = "asd"
+        self.assertTrue(model.new_attribute == "asd")
+
+        # act, assert
+        del(another_decorator.new_attribute)
+        self.assertTrue("new_attribute" not in model.__dict__)
+
+        print(another_decorator.__doc__)
+
     def test_decorating_an_object_that_is_not_of_type_ml_model(self):
         """Testing decorating an object that is not of type MLModel."""
         # arrange

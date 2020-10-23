@@ -7,6 +7,17 @@ from tests.mocks import MLModelMock
 
 class MLModelTests(unittest.TestCase):
 
+    def test_return_string_representation(self):
+        """Test that an MLModel class returns a string representation of itself."""
+        # arrange
+        model = MLModelMock()
+
+        # act
+        string = str(model)
+
+        # assert
+        self.assertTrue(string == "MLModelMock")
+
     def test_throw_exception_on_bad_input(self):
         """Testing that the MLModel class throws exception on bad input."""
         # arrange
