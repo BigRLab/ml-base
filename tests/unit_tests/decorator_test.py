@@ -1,8 +1,8 @@
 import unittest
 
-from ml_base.ml_model import MLModelException
+from ml_base.ml_model import MLModelException, MLModel
 from tests.mocks import SomeClass, MLModelMock, SimpleDecorator, ModelInput, ModelOutput, AddStringDecorator, \
-    CatchExceptionsDecorator
+    CatchExceptionsDecorator, ModifySchemaDecorator
 
 
 class DecoratorTests(unittest.TestCase):
@@ -44,8 +44,6 @@ class DecoratorTests(unittest.TestCase):
         # act, assert
         del(another_decorator.new_attribute)
         self.assertTrue("new_attribute" not in model.__dict__)
-
-        print(another_decorator.__doc__)
 
     def test_decorating_an_object_that_is_not_of_type_ml_model(self):
         """Testing decorating an object that is not of type MLModel."""
@@ -136,6 +134,41 @@ class DecoratorTests(unittest.TestCase):
         self.assertTrue(version == "1.0.0")
         self.assertTrue(input_schema == ModelInput)
         self.assertTrue(output_schema == ModelOutput)
+
+    def test_with_modify_schema_decorator(self):
+        """Testing that modifying the schema of a model is possible in a decorator."""
+        # arrange
+        model = MLModelMock()
+        decorator = ModifySchemaDecorator(model=model)
+
+        # act
+        input_schema = decorator.input_schema
+        exception_raised = False
+        try:
+            data = {"sepal_length": 6.0,
+                    "sepal_width": 4.0,
+                    "petal_length": 2.0,
+                    "petal_width": 1.5,
+                    "correlation_id": "7c687688-cc7e-4d96-b9db-3ae10d5bd19a"}
+
+            input_schema = decorator.input_schema
+            p = input_schema(**data)
+            pass
+        except Exception as e:
+            exception_raised = True
+            raise
+
+        # assert
+        self.assertFalse(exception_raised)
+
+    def test_is_instance_check_works_correctly(self):
+        """Testing that a decorator will pass the isinstance check as a subtype of MLModel."""
+        # arrange
+        model = MLModelMock()
+        decorator = ModifySchemaDecorator(model=model)
+
+        # act, assert
+        self.assertTrue(isinstance(decorator, MLModel))
 
 
 if __name__ == '__main__':

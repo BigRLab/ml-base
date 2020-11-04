@@ -6,7 +6,8 @@ Welcome to the ML Base Package documentation!
    :caption: Contents:
 
    introduction.rst
-   example.rst
+   ml_model_example.rst
+   decorator_example.rst
    api.rst
 
 

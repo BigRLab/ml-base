@@ -1,6 +1,6 @@
-from pydantic import BaseModel, Field
-from pydantic import ValidationError
 from enum import Enum
+from uuid import UUID, uuid4
+from pydantic import BaseModel, Field, ValidationError, create_model
 
 from ml_base.ml_model import MLModel, MLModelException, MLModelSchemaValidationException
 from ml_base.decorator import MLModelDecorator
@@ -84,3 +84,30 @@ class CatchExceptionsDecorator(MLModelDecorator):
             return self._model.predict(data=data)
         except Exception as e:
             raise MLModelException(e)
+
+
+class ModifySchemaDecorator(MLModelDecorator):
+    """Decorator that modifies the input and output schemas of the model object."""
+
+    @property
+    def input_schema(self):
+        input_schema = self._model.input_schema
+        new_input_schema = create_model(
+            input_schema.__name__,
+            correlation_id=(UUID, ...),
+            __base__=input_schema,
+        )
+        return new_input_schema
+
+    @property
+    def output_schema(self):
+        output_schema = self._model.output_schema
+        return output_schema
+
+    def predict(self, data):
+        prediction = self._model.predict(data=data)
+        wrapped_prediction = {
+            "correlation_id": uuid4(),
+            "model_input": prediction
+        }
+        return wrapped_prediction

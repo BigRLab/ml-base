@@ -1,6 +1,6 @@
-*******
-Example
-*******
+****************
+ML Model Example
+****************
 
 Creating a Simple Model
 #######################

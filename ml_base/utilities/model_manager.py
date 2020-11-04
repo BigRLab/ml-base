@@ -2,7 +2,7 @@
 import importlib
 from typing import List
 
-from ml_base.ml_model import MLModel
+from ml_base import MLModel, MLModelDecorator
 
 
 class ModelManager(object):
@@ -147,5 +147,3 @@ class ModelManager(object):
             raise ValueError("Instance of model '{}' not found in ModelManager.".format(qualified_name))
         else:
             return model_objects[0]
-
-    # TODO: add add_decorator() method
